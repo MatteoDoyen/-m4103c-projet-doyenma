@@ -43,11 +43,14 @@ function selectionner_recherche(elt) {
 
   $zoneRecherche.val(elt.textContent);
 
-  recherche_courante_news = JSON.parse(sessionStorage.getItem(elt.textContent));
-
-  for(elt of recherche_courante_news)
+  if(elt.textContent in sessionStorage)
   {
-      $resultat.append('<p class="titre_result"><a class="titre_news" href="'+elt.url+'" target="_blank">'+elt.Titre+'</a><span class="date_news">'+elt.date+'</span><span class="action_news" onclick="supprimer_nouvelle(this)"><img src="img/disk15.jpg"/></span></p>');
+    recherche_courante_news = JSON.parse(sessionStorage.getItem(elt.textContent));
+
+    for(elt of recherche_courante_news)
+    {
+        $resultat.append('<p class="titre_result"><a class="titre_news" href="'+elt.url+'" target="_blank">'+elt.Titre+'</a><span class="date_news">'+elt.date+'</span><span class="action_news" onclick="supprimer_nouvelle(this)"><img src="img/disk15.jpg"/></span></p>');
+    }
   }
 }
 
