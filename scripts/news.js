@@ -39,7 +39,7 @@ function supprimer_recherche(elt) {
 
 function selectionner_recherche(elt) {
 
-  $resultat.text = '';
+  $resultat.empty();
 
   $zoneRecherche.val(elt.textContent);
 
