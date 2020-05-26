@@ -1,9 +1,9 @@
-// Tableau contenant des chaines de caractères correspondant aux recherches stockées
-var recherches = [];
-// Chaine de caractères correspondant à la recherche courante
-var recherche_courante;
-// Tableau d'objets de type resultats (avec titre, date et url)
-var recherche_courante_news = [];
+var model = {};
+model.recherche_courante = "";
+model.recherches = [];
+model.recherche_courante_news = [];
+model.nomFonction = function() { ... }
+
 
 var $zoneRecherche = $('#zone_saisie');
 
