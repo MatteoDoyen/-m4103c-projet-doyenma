@@ -49,7 +49,6 @@ function selectionner_recherche(elt) {
   {
       $resultat.append('<p class="titre_result"><a class="titre_news" href="'+elt.url+'" target="_blank">'+elt.Titre+'</a><span class="date_news">'+elt.date+'</span><span class="action_news" onclick="supprimer_nouvelle(this)"><img src="img/disk15.jpg"/></span></p>');
   }
-
 }
 
 
