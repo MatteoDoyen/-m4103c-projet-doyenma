@@ -14,6 +14,7 @@ var $resultat = $('#resultats');
 var $loading = $('#wait');
 
 function ajouter_recherche() {
+
   if((recherches.indexOf($zoneRecherche.val(),1))<0)
   {
     recherches.push($zoneRecherche.val());
@@ -53,10 +54,13 @@ function selectionner_recherche(elt) {
 
 
 function init() {
-  recherches = JSON.parse(sessionStorage.getItem("recherche"));
-	for(label of recherches)
+  if('recherche' in sessionStorage)
   {
-    $recherchesStockees.append('<p id="'+recherches.length+"_label"+'"class="titre-recherche"><label onclick="selectionner_recherche(this)" >'+label+'</label><img src="img/croix30.jpg" onclick="supprimer_recherche(this)" class="icone-croix"/></p>');
+    recherches = JSON.parse(sessionStorage.getItem("recherche"));
+    for(label of recherches)
+    {
+      $recherchesStockees.append('<p id="'+recherches.length+"_label"+'"class="titre-recherche"><label onclick="selectionner_recherche(this)" >'+label+'</label><img src="img/croix30.jpg" onclick="supprimer_recherche(this)" class="icone-croix"/></p>');
+    }
   }
 }
 
@@ -144,7 +148,9 @@ function supprimer_nouvelle(elt) {
   {
     recherche_courante_news.splice(index,1);
 
-    sessionStorage.removeItem(lien.textContent);
+    sessionStorage.removeItem($zoneRecherche.val());
+
+    sessionStorage.setItem($zoneRecherche.val(),JSON.stringify(recherche_courante_news));
   }
 
   elt.removeAttribute('onclick');
