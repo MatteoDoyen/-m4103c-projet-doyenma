@@ -39,7 +39,7 @@ function supprimer_recherche(elt) {
   paragraphe.parentNode.removeChild(paragraphe);
   if((recherches.indexOf(paragraphe.getElementsByTagName("label")[0].textContent))>=0)
   {
-    recherches.splice(recherches.indexOf(paragraphe.getElementsByTagName("label")[0].textContent),1);
+    recherches.splice(recherches.indexOf(paragraphe.getElementsByTagName("label")[0].textContent),0);
 
     localStorage.removeItem('recherche');
 
@@ -100,14 +100,25 @@ function rechercher_nouvelles() {
 function maj_resultats(res) {
   var tabRes = JSON.parse(res);
 
+  let indexTitre = -2;
+
+  let indexDate = -2;
+
   for(elt of tabRes)
   {
 
+
+      indexTitre = recherche_courante_news.map(function(e) {
+      return e.titre}).indexOf(decodeHtmlEntities(elt.titre));
+
+      indexDate = recherche_courante_news.map(function(e) {
+      return e.date}).indexOf(formatDate(elt.date),indexTitre);
+
       let paragraphe = '<p class="titre_result"><a class="titre_news" href="'+decodeHtmlEntities(elt.url)+'" target="_blank">'+decodeHtmlEntities(elt.titre)+'</a><span class="date_news">'+formatDate(elt.date);
 
-      if(indexOfResultat(tabRes,elt)>=0)
+      if(indexTitre==indexDate&&indexDate>=0)
       {
-        paragraphe +=('</span><span class="action_news" onclick="supprimer_nouvelle(this)"><img src="img/disk15.jpg"/></span></p>');
+        paragraphe+=('</span><span class="action_news" onclick="supprimer_nouvelle(this)"><img src="img/disk15.jpg"/></span></p>');
       }
       else {
         paragraphe+=('</span><span class="action_news" onclick="sauver_nouvelle(this)"><img src="img/horloge15.jpg"/></span></p>');
@@ -116,7 +127,6 @@ function maj_resultats(res) {
   }
   $loading.css("display", "none");
 }
-
 
 function sauver_nouvelle(elt) {
 
@@ -130,7 +140,7 @@ function sauver_nouvelle(elt) {
 
   elt.getElementsByTagName('img')[0].setAttribute("src", "img/disk15.jpg");
 
-  let text = { "titre": lien.textContent , "date": date.textContent , "url": +lien.href };
+  let text = { "titre": lien.textContent , "date": date.textContent , "url": lien.href };
 
   if((recherche_courante_news.indexOf(text))<0)
   {
@@ -157,11 +167,11 @@ function supprimer_nouvelle(elt) {
 
   elt.getElementsByTagName('img')[0].setAttribute("src", "img/horloge15.jpg");
 
-  let text = { "titre": lien.textContent , "date": date.textContent , "url": +lien.href };
+  let text = { "titre": lien.textContent , "date": date.textContent , "url": lien.href };
 
   let index = recherche_courante_news.map(function(e) { return e.titre; }).indexOf(lien.textContent);
 
-  recherche_courante_news.splice(index,1);
+  recherche_courante_news.splice(index,0);
 
   localStorage.removeItem(recherche_courante);
 
