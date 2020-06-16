@@ -5,7 +5,7 @@ view.recherche_courante = function() { return $('#zone_saisie').val(); }
 //div qui affiche les recherches de l'utilisateur
 view.recherchesStockees = $('#recherches-stockees');
 //affiche une recherche
-view.addRecherche = function(taille,recherche_courante) { view.recherchesStockees.append('<p id="'+taille+"_label"+'"class="titre-recherche"><label onclick="selectionner_recherche(this)" >'+recherche_courante+'</label><img src="img/croix30.jpg" onclick="supprimer_recherche(this)" class="icone-croix"/></p>'); }
+view.addRecherche = function(taille,recherche_courante) { view.recherchesStockees.append('<p id="'+taille+"_label"+'"class="titre-recherche"><label onclick="controler.selectionner_recherche(this)" >'+recherche_courante+'</label><img src="img/croix30.jpg" onclick="controler.supprimer_recherche(this)" class="icone-croix"/></p>'); }
 //div qui affiche les offres
 view.resultat = $('#resultats');
 //affiche chargement et cache resultat
@@ -28,12 +28,12 @@ view.setZoneRecherche = function (elt) {view.zone_saisie.val(elt.textContent); r
 
 view.clearResultat = function() { view.resultat.empty(); }
 
-view.afficherOffre = function(recherche_courante_news)
+view.afficherOffre = function(recherches)
 {
-	for(elt of recherche_courante_news)
+	for(elt of recherches)
   {
 		  //ajoute des offre à la div resultat
-      view.resultat.append('<p class="titre_result"><a class="titre_news" href="'+elt.url+'" target="_blank">'+elt.titre+'</a><span class="date_news">'+elt.date+'</span><span class="action_news" onclick="supprimer_nouvelle(this)"><img src="img/disk15.jpg"/></span></p>');
+      view.resultat.append('<p class="titre_result"><a class="titre_news" href="'+elt.url+'" target="_blank">'+elt.titre+'</a><span class="date_news">'+elt.date+'</span><span class="action_news" onclick="controler.supprimer_nouvelle(this)"><img src="img/disk15.jpg"/></span></p>');
   }
 }
 
@@ -46,29 +46,32 @@ view.afficherRecherches = function(taille,recherches)
 	}
 }
 
-view.ajouterOffre = function(tabRes) {
+view.ajouterOffre = function(tabRes,recherche_courante_news) {
 
 	//index initialisé à -2 pour passer le test : sup à 0 et égaux
 	//j'utilise cette solution avec deux index car indexOfResultat ne fonctionne pas pour moi
 	let indexTitre = -2;
 	let indexDate = -2;
 
+
 	for(elt of tabRes)
 	{
+		//cherche l'index du titre dans tout le tableau
 		indexTitre = recherche_courante_news.map(function(e) {
 		return e.titre}).indexOf(decodeHtmlEntities(elt.titre));
-
+		//cherche l'index de la date à partir de l'index du titre pour ignorer une date similaire AVANT l'index du titre
 		indexDate = recherche_courante_news.map(function(e) {
 		return e.date}).indexOf(formatDate(elt.date),indexTitre);
+
 		//on créer le paragraphe sans son image, selon si il est dans le local storage il aura soit une horloge, soit une disquette
 		let paragraphe = '<p class="titre_result"><a class="titre_news" href="'+decodeHtmlEntities(elt.url)+'" target="_blank">'+decodeHtmlEntities(elt.titre)+'</a><span class="date_news">'+formatDate(elt.date);
 
 		if(indexTitre==indexDate&&indexDate>=0)
 		{
-			paragraphe+=('</span><span class="action_news" onclick="supprimer_nouvelle(this)"><img src="img/disk15.jpg"/></span></p>');
+			paragraphe+=('</span><span class="action_news" onclick="controler.supprimer_nouvelle(this)"><img src="img/disk15.jpg"/></span></p>');
 		}
 		else {
-			paragraphe+=('</span><span class="action_news" onclick="sauver_nouvelle(this)"><img src="img/horloge15.jpg"/></span></p>');
+			paragraphe+=('</span><span class="action_news" onclick="controler.sauver_nouvelle(this)"><img src="img/horloge15.jpg"/></span></p>');
 		}
 		//on ajoute le resultat
 		view.resultat.append(paragraphe);
@@ -91,6 +94,6 @@ view.sauver_nouvelle = function(elt,supprimer) {
 	return text;
 }
 
-view.attributSupprimer = function(elt) { elt.removeAttribute('onclick'); elt.setAttribute('onclick','supprimer_nouvelle(this)'); }
+view.attributSupprimer = function(elt) { elt.removeAttribute('onclick'); elt.setAttribute('onclick','controler.supprimer_nouvelle(this)'); }
 
-view.attributAjouter = function(elt) { elt.removeAttribute('onclick'); elt.setAttribute('onclick','sauver_nouvelle(this)'); }
+view.attributAjouter = function(elt) { elt.removeAttribute('onclick'); elt.setAttribute('onclick','controler.sauver_nouvelle(this)'); }

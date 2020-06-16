@@ -7,7 +7,7 @@
 	 <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
 	<link rel="stylesheet" type="text/css" media="screen" href="news.css">
 </head>
-<body onload="init();">
+<body onload="controler.init();">
 	<header>
 		<img id="banniere" src="img/job.png"/>
 	</header>
@@ -20,9 +20,9 @@
 		<h3 class="titre">nouvelle recherche</h3>
 		<div id="nouvelle-recherche">
 			<input type="text" name="zone_saisie" id="zone_saisie"/>
-			<img class="icone-disk" src="img/disk30.jpg" onclick="ajouter_recherche()" />
+			<img class="icone-disk" src="img/disk30.jpg" onclick="controler.ajouter_recherche()" />
 			<BR/>
-			<input type="button" value="OK" onclick="rechercher_nouvelles()"/>
+			<input type="button" value="OK" onclick="controler.rechercher_nouvelles()"/>
 		</div>
 	</div>
 

@@ -1,6 +1,6 @@
 var controler = {};
 
-function ajouter_recherche() {
+controler.ajouter_recherche = function () {
     //récupère la zone de recherche
    recherche_courante = view.recherche_courante();
    //si l'index est négatif, la recherche n'existe pas, on peut donc l'ajouter
@@ -18,11 +18,11 @@ document.addEventListener('keydown', logKey);
 function logKey(e) {
   if(e.keyCode===13)
   {
-    rechercher_nouvelles();
+    controler.rechercher_nouvelles();
   }
 }
 
-function supprimer_recherche(elt) {
+controler.supprimer_recherche = function(elt) {
   //on supprime le paragraphe sur lequel à cliqué l'utilisateur et on récupère le titre de l'annonce
   let titre = view.supprParagraphe(elt);
   //on récupère l'index du titre dans la recherche
@@ -36,7 +36,7 @@ function supprimer_recherche(elt) {
 }
 
 
-function selectionner_recherche(elt) {
+controler.selectionner_recherche = function(elt) {
   //on vide la zone d'affichage des offres
   view.clearResultat();
   //on change la zone de recherche avec la recherche sur laquelle on à cliqué
@@ -47,13 +47,14 @@ function selectionner_recherche(elt) {
   {
     //récupère toutes les offres et les renvoies sous forme de tableau
     let recherche_courante_news = model.recupererOffre(recherche);
+    console.log(recherche_courante_news);
     //affiche les offres
     view.afficherOffre(recherche_courante_news);
   }
 }
 
 
-function init() {
+controler.init = function() {
   //si il existe des recherches de stockées on les récupères
   if('recherche' in localStorage)
   {
@@ -65,11 +66,12 @@ function init() {
 }
 
 
-function rechercher_nouvelles() {
+controler.rechercher_nouvelles = function() {
   //clear la zone de resultat
   view.clearResultat();
   //récupère la zone de recherche
   let recherche_courante = view.recherche_courante();
+  model.recherche_courante = recherche_courante;
   //cache la zone avec un chargement jusqu'a la fin des opérations
   view.loading();
   //verifie si la recherche existe dans le local storage
@@ -78,29 +80,32 @@ function rechercher_nouvelles() {
     //rempli le tableau avec ce qu'il y à dans le localStorage
     model.recupererOffre(recherche_courante);
   }
+  //rempli le tableau des recherches tapés avec celles du localStorage
+  model.fillTableauDeRecherchesTape();
+  //si la recherche n'existe pas dans le tableau alors on l'ajoute
   if(model.getIndextableauDeRecherchesTape(recherche_courante)<0)
   {
     model.addTableauDeRecherchesTape(recherche_courante);
   }
   //récupère les offres d'emploi sur le site et appel maj resultat
-  ajax_get_request(maj_resultats,"https://carl-vincent.fr/search-internships.php?data="+recherche_courante,true);
+  ajax_get_request(controler.maj_resultats,"https://carl-vincent.fr/search-internships.php?data="+recherche_courante,true);
 }
 
 
-function maj_resultats(res) {
+controler.maj_resultats = function(res) {
   //recupère les offres
   let tabRes = model.recupererOffres(res);
   //passage du tableau d'offre à la vue, elle affichera toutes les offres
-  view.ajouterOffre(tabRes);
+  view.ajouterOffre(tabRes,model.recherche_courante_news);
   //on peut désormais arrêter le chargement et afficher le resultat
   view.loadingFini();
 
 }
 
 
-function sauver_nouvelle(elt) {
+controler.sauver_nouvelle = function(elt) {
   //récupère la zone de recherche
-  let recherche = view.recherche_courante();
+  let recherche = model.recherche_courante;
   //créer un objet avec le titre,l'url et la date de l'offre selectionné
   //on met false pour que l'image soit une disquette
   let text = view.sauver_nouvelle(elt,false);
@@ -116,9 +121,9 @@ function sauver_nouvelle(elt) {
 }
 
 
-function supprimer_nouvelle(elt) {
+controler.supprimer_nouvelle = function(elt) {
 
-  let recherche_courante = view.recherche_courante();
+  let recherche_courante = model.recherche_courante;
   //créer un objet avec le titre,l'url et la date de l'offre selectionné
   //on met true pour que l'image soit une horloge
   let text = view.sauver_nouvelle(elt,true);
@@ -128,27 +133,22 @@ function supprimer_nouvelle(elt) {
   view.attributAjouter(elt);
 }
 
-
-function ajax_get_request(callback, url, async) {
-	var xhr = new XMLHttpRequest();
-
-	xhr.onreadystatechange = function(){
-
-
-		if (callback && xhr.readyState == 4 && (xhr.status == 200 || xhr.status == 0)) {
-
-			callback(xhr.responseText);
-		}
-	};
-
-	xhr.open("GET", url, async);
-	xhr.send();
-
-}
-
 $(function(){
-    var tabRecherches = model.getTableauDeRecherchesTape();
+    //recupère le tableau de toutes les recherches déjà tapé
+    var tabRecherches = model.fillTableauDeRecherchesTape();
     $("#zone_saisie").autocomplete({
       source: tabRecherches
     });
 });
+
+
+function ajax_get_request(callback, url, async) {
+	var xhr = new XMLHttpRequest();
+	xhr.onreadystatechange = function(){
+		if (callback && xhr.readyState == 4 && (xhr.status == 200 || xhr.status == 0)) {
+			callback(xhr.responseText);
+		}
+	};
+	xhr.open("GET", url, async);
+	xhr.send();
+}
